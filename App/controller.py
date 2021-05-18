@@ -29,9 +29,48 @@ import csv
 El controlador se encarga de mediar entre la vista y el modelo.
 """
 
-# Inicialización del Catálogo de libros
+# ___________________________________________________
+#  Inicializacion del catalogo
+# ___________________________________________________
+
+
+def init():
+    """
+    Llama la funcion de inicializacion  del modelo.
+    """
+    # analyzer es utilizado para interactuar con el modelo
+    analyzer = model.newAnalyzer()
+    return analyzer
+
 
 # Funciones para la carga de datos
+def loadConnections(analyzer, connectionsfile):
+    """
+    Carga los datos de los archivos CSV en el modelo.
+    Se crea un arco entre cada par de vertices que
+    pertenecen a la misma conexión y van en el mismo sentido.
+
+    addRouteConnection crea conexiones entre diferentes rutas
+    servidas en una misma estación.
+    """
+    connectionsfile = cf.data_dir + connectionsfile
+    input_file = csv.DictReader(open(connectionsfile, encoding="utf-8"),
+                                delimiter=",")
+    lastconnection = None
+
+    for connection in input_file:
+
+        if lastconnection is not None:
+
+            samecable = lastconnection['cable_id'] == connection['cable_id']
+
+            if samecable:
+                model.addStopConnection(analyzer, lastconnection, connection)
+
+        lastconnection = connection
+    model.addRouteConnections(analyzer)
+    return analyzer
+
 
 # Funciones de ordenamiento
 

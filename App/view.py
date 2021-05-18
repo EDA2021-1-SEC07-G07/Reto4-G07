@@ -20,11 +20,13 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
-import config as cf
 import sys
-import controller
-from DISClib.ADT import list as lt
-assert cf
+import config
+import threading
+from App import controller
+from DISClib.ADT import stack
+assert config
+import time
 
 
 """
@@ -33,26 +35,77 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
+connectionsfile = "connections.csv"
 
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("1- Inicializar analizador")
+    print("2- Cargar información de cables submarinos")
+    print("3- Identificar los clústeres de comunicación (Req-1)")
+    print("4- Identificar los puntos de conexión críticos de la red (Req-2)")
+    print("5- Identificar la ruta de menor distancia (Req-3)")
+    print("6- Identificar la infraestructura crítica de la red (Req-4)")
+    print("7- Análisis de fallas (Req-5)")
+    print("8- Los mejores canales para transmitir (Req-6)")
+    print("9- La mejor ruta para comunicarme (Req-7)")
+    print("10- Graficando los grafos (Req-8)")
 
-catalog = None
+
+def optionTwo(analyzer):
+
+    print("\nCargando información de cables submarinos ....")
+    controller.loadServices(analyzer, connectionsfile)
+
+def optionThree(analyzer):
+    pass
+
+def optionFour(analyzer, initialStation):
+    pass
+
+def optionFive(analyzer, destStation):
+    pass
+
+def optionSix(analyzer, destStation):
+    pass
+
+def optionSeven(analyzer):
+    pass
+
+def optionEight(analyzer):
+    pass
+
+def optionNine(analyzer):
+    pass
+
+def optionTen(analyzer):
+    pass
+
 
 """
 Menu principal
 """
-while True:
-    printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
-    if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
 
-    elif int(inputs[0]) == 2:
-        pass
+def thread_cycle():
+    while True:
+        printMenu()
+        inputs = input('Seleccione una opción para continuar\n>')
 
-    else:
-        sys.exit(0)
-sys.exit(0)
+        if int(inputs[0]) == 1:
+            print("\nInicializando....")
+            # cont es el controlador que se usará de acá en adelante
+            analyzer = controller.init()
+
+        elif int(inputs[0]) == 2:
+            optionTwo(analyzer)
+
+
+        else:
+            sys.exit(0)
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    threading.stack_size(67108864)  # 64MB stack
+    sys.setrecursionlimit(2 ** 20)
+    thread = threading.Thread(target=thread_cycle)
+    thread.start()
