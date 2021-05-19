@@ -247,6 +247,18 @@ def addConnectiontoCapitalVertex(analyzer, capital_info, city):
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def totalLandingPointss(analyzer):
+    """
+    Retorna el total de landing points (vertices) del grafo
+    """
+    return gr.numVertices(analyzer['connections'])
+
+
+def totalConnections(analyzer):
+    """
+    Retorna el total arcos del grafo
+    """
+    return gr.numEdges(analyzer['connections'])
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

@@ -62,9 +62,15 @@ def optionTwo(analyzer):
     print("\nCargando información de cables submarinos ....")
     analyzer = controller.loadConnections(analyzer, connectionsfile) #Se crea el grafo principal con conexiones locales y remotas (submarinas)
 
-    analyzer = controller.loadCountries(analyzer, countriesfile) #Se crea un mapa de hash con los paises
+    analyzer = controller.loadCountries(analyzer, countriesfile) #Se crea un mapa de hash con los paises y se genera un vértice terrestre por capital
 
-    analyzer = controller.loadCapitalVertex(analyzer, capital_landing_points_file)
+    analyzer = controller.loadCapitalVertex(analyzer, capital_landing_points_file)#Se crean las conexiones entre el vertice capital y las diferentes ciudades
+
+    numedges = controller.totalConnections(analyzer)
+    numvertex = controller.totalLandingPoints(analyzer)
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+    print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
 
 
 def optionThree(analyzer):

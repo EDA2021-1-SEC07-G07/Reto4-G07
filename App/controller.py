@@ -111,3 +111,15 @@ def loadCapitalVertex(analyzer, capital_landing_points_file):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def totalLandingPoints(analyzer):
+    """
+    Total de paradas de landing points
+    """
+    return model.totalLandingPointss(analyzer)
+
+
+def totalConnections(analyzer):
+    """
+    Total de enlaces entre vertices
+    """
+    return model.totalConnections(analyzer)
