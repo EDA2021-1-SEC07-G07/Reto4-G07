@@ -28,6 +28,10 @@ from DISClib.ADT import stack
 assert config
 import time
 
+from DISClib.ADT.graph import gr
+from DISClib.ADT import map as m
+from DISClib.ADT import list as lt
+from DISClib.Algorithms.Graphs import scc
 
 """
 La vista se encarga de la interacción con el usuario
@@ -54,7 +58,10 @@ def printMenu():
 def optionTwo(analyzer):
 
     print("\nCargando información de cables submarinos ....")
-    controller.loadServices(analyzer, connectionsfile)
+    analyzer = controller.loadConnections(analyzer, connectionsfile)
+
+    print(gr.vertices(analyzer["connections"]))
+
 
 def optionThree(analyzer):
     pass

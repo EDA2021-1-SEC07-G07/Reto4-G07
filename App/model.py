@@ -75,7 +75,7 @@ def newAnalyzer():
 
 
 # Funciones para agregar informacion al catalogo
-def addStopConnection(analyzer, lastservice, service):
+def addStopConnection(analyzer, lastconnection, connection):
     """
     Adiciona las estaciones al grafo como vertices y arcos entre las
     estaciones adyacentes.
@@ -88,20 +88,82 @@ def addStopConnection(analyzer, lastservice, service):
     Si la estacion sirve otra ruta, se tiene: 75009-101
     """
     try:
-        origin = formatVertex(lastservice)
-        destination = formatVertex(service)
-        cleanServiceDistance(lastservice, service)
-        distance = float(service['Distance']) - float(lastservice['Distance'])
+        origin = formatVertex(lastconnection)
+        destination = formatVertex(connection)
+        cleanConnectionDistance(lastconnection, connection)
+
+        cable_length = connection['cable_length'].split()[0]
+        last_cable_length = lastconnection['cable_length'].split()[0]
+
+        distance = float(cable_length) - float(last_cable_length)
         distance = abs(distance)
-        addStop(analyzer, origin)
-        addStop(analyzer, destination)
+
+        addLandingPoint(analyzer, origin)
+        addLandingPoint(analyzer, destination)
         addConnection(analyzer, origin, destination, distance)
-        addRouteStop(analyzer, service)
-        addRouteStop(analyzer, lastservice)
+        addCableLandingPoint(analyzer, connection)
+        addCableLandingPoint(analyzer, lastconnection)
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:addStopConnection')
 
+
+def addLandingPoint(analyzer, landing_point_id):
+    """
+    Adiciona un landing_point como un vertice del grafo
+    """
+    try:
+        if not gr.containsVertex(analyzer['connections'], landing_point_id):
+            gr.insertVertex(analyzer['connections'], landing_point_id)
+        return analyzer
+    except Exception as exp:
+        error.reraise(exp, 'model:addstop')
+
+
+def addConnection(analyzer, origin, destination, distance):
+    """
+    Adiciona un arco entre dos estaciones
+    """
+    edge = gr.getEdge(analyzer['connections'], origin, destination)
+    if edge is None:
+        gr.addEdge(analyzer['connections'], origin, destination, distance)
+    return analyzer
+
+
+def addCableLandingPoint(analyzer, connection):
+    """
+    Agrega a un landing point, un cable que es utilizado en ese vertice
+    """
+    entry = m.get(analyzer['landing_points'], connection['destination'])
+    if entry is None:
+        lstroutes = lt.newList(cmpfunction=compareroutes)
+        lt.addLast(lstroutes, connection['cable_id'])
+        m.put(analyzer['landing_points'], connection['destination'], lstroutes)
+    else:
+        lstroutes = entry['value']
+        info = connection['cable_id']
+        if not lt.isPresent(lstroutes, info):
+            lt.addLast(lstroutes, info)
+    return analyzer
+
+
+def addRouteConnections(analyzer):
+    """
+    Por cada vertice (cada estacion) se recorre la lista
+    de rutas servidas en dicha estación y se crean
+    arcos entre ellas para representar el cambio de ruta
+    que se puede realizar en una estación.
+    """
+    lststops = m.keySet(analyzer['landing_points'])
+    for key in lt.iterator(lststops):
+        lstroutes = m.get(analyzer['landing_points'], key)['value']
+        prevrout = None
+        for route in lt.iterator(lstroutes):
+            route = key + '-' + route
+            if prevrout is not None:
+                addConnection(analyzer, prevrout, route, 0)
+                addConnection(analyzer, route, prevrout, 0)
+            prevrout = route
 # Funciones para creacion de datos
 
 # Funciones de consulta
@@ -122,6 +184,17 @@ def compareLandingPointIds(landing_point, keylandingpoint):
     else:
         return -1
 
+def compareroutes(route1, route2):
+    """
+    Compara dos rutas
+    """
+    if (route1 == route2):
+        return 0
+    elif (route1 > route2):
+        return 1
+    else:
+        return -1
+
 
 
 # Funciones de ayuda 
@@ -129,6 +202,16 @@ def formatVertex(connection):
     """
     Se formatea el nombrer del vertice con el id del landing point seguido del cable específico
     """
-    name = connection['BusStopCode'] + '-'
-    name = name + connection['ServiceNo']
+    name = connection['destination'] + '-'
+    name = name + connection['cable_id']
     return name
+
+def cleanConnectionDistance(lastconnection, connection):
+    """
+    En caso de que el archivo tenga un espacio en la
+    distancia, se reemplaza con cero.
+    """
+    if connection['cable_length'] == '':
+        connection['cable_length'] = 0
+    if lastconnection['cable_length'] == '':
+        lastconnection['cable_length'] = 0
