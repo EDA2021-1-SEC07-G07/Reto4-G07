@@ -33,6 +33,7 @@ from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 from DISClib.DataStructures import mapentry as me
+from math import radians, cos, sin, asin, sqrt
 assert config
 
 """
@@ -207,8 +208,14 @@ def addConnectiontoCapitalVertex(analyzer, capital_info, city):
     city_landing_point_id = city["landing_point_id"]
     capital_name = capital_info["CapitalName"]
 
-    #TODO Actualizar distancia 
-    distance = 0
+    capital_lat = float(capital_info["CapitalLatitude"])
+    capital_long = float(capital_info["CapitalLongitude"])
+
+    city_lat = float(city["latitude"])
+    city_lon = float(city["longitude"])
+
+    #Se aplica la fórmula de haversine para encontrar la distancia entre la capital y sus ciudades
+    distance = haversine(capital_lat, capital_long, city_lat, city_lon)
 
     if m.contains(analyzer["landing_points"], city_landing_point_id):
 
@@ -297,3 +304,19 @@ def cleanConnectionDistance(lastconnection, connection):
         connection['cable_length'] = "0"
     if lastconnection['cable_length'] == 'n.a.':
         lastconnection['cable_length'] = "0"
+
+def haversine(lat1, lon1, lat2, lon2):
+    """Función para calcular la distancia entre dos coordenadas. Tomada del usuario https://stackoverflow.com/users/7887334/clay"""
+    R = 6372.8 #For Earth radius in kilometers use 6372.8 km
+    dLat = radians(lat2 - lat1)
+    dLon = radians(lon2 - lon1)
+    lat1 = radians(lat1)
+    lat2 = radians(lat2)
+
+    a = sin(dLat/2)**2 + cos(lat1)*cos(lat2)*sin(dLon/2)**2
+    c = 2*asin(sqrt(a))
+
+    return R * c
+
+
+
