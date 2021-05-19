@@ -54,21 +54,15 @@ def loadConnections(analyzer, connectionsfile):
     servidas en una misma estación.
     """
     connectionsfile = cf.data_dir + connectionsfile
-    input_file = csv.DictReader(open(connectionsfile, encoding="utf-8"),
+    input_file = csv.DictReader(open(connectionsfile, encoding="utf-8-sig"),
                                 delimiter=",")
     lastconnection = None
 
     for connection in input_file:
 
-        if lastconnection is not None:
+        model.addStopConnection(analyzer, connection, connection)
 
-            samecable = lastconnection['cable_id'] == connection['cable_id']
-
-            if samecable:
-                model.addStopConnection(analyzer, lastconnection, connection)
-
-        lastconnection = connection
-    model.addRouteConnections(analyzer)
+    model.addRouteConnections(analyzer) #Conexiones locales 
     return analyzer
 
 

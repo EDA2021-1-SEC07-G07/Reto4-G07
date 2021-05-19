@@ -60,8 +60,6 @@ def optionTwo(analyzer):
     print("\nCargando información de cables submarinos ....")
     analyzer = controller.loadConnections(analyzer, connectionsfile)
 
-    print(gr.vertices(analyzer["connections"]))
-
 
 def optionThree(analyzer):
     pass

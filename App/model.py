@@ -88,15 +88,14 @@ def addStopConnection(analyzer, lastconnection, connection):
     Si la estacion sirve otra ruta, se tiene: 75009-101
     """
     try:
-        origin = formatVertex(lastconnection)
-        destination = formatVertex(connection)
+        origin = formatOriginVertex(lastconnection)
+        destination = formatDestinationVertex(connection)
+
         cleanConnectionDistance(lastconnection, connection)
 
-        cable_length = connection['cable_length'].split()[0]
-        last_cable_length = lastconnection['cable_length'].split()[0]
+        cable_length = connection['cable_length'].split()[0].replace(",","")
 
-        distance = float(cable_length) - float(last_cable_length)
-        distance = abs(distance)
+        distance = float(cable_length)
 
         addLandingPoint(analyzer, origin)
         addLandingPoint(analyzer, destination)
@@ -104,6 +103,7 @@ def addStopConnection(analyzer, lastconnection, connection):
         addCableLandingPoint(analyzer, connection)
         addCableLandingPoint(analyzer, lastconnection)
         return analyzer
+
     except Exception as exp:
         error.reraise(exp, 'model:addStopConnection')
 
@@ -161,8 +161,11 @@ def addRouteConnections(analyzer):
         for route in lt.iterator(lstroutes):
             route = key + '-' + route
             if prevrout is not None:
-                addConnection(analyzer, prevrout, route, 0)
-                addConnection(analyzer, route, prevrout, 0)
+
+                local_distance = 0.1
+
+                addConnection(analyzer, prevrout, route, local_distance)
+                addConnection(analyzer, route, prevrout, local_distance)
             prevrout = route
 # Funciones para creacion de datos
 
@@ -198,7 +201,15 @@ def compareroutes(route1, route2):
 
 
 # Funciones de ayuda 
-def formatVertex(connection):
+def formatOriginVertex(connection):
+    """
+    Se formatea el nombrer del vertice con el id del landing point seguido del cable específico
+    """
+    name = connection['origin'] + '-'
+    name = name + connection['cable_id']
+    return name
+
+def formatDestinationVertex(connection):
     """
     Se formatea el nombrer del vertice con el id del landing point seguido del cable específico
     """
@@ -206,12 +217,13 @@ def formatVertex(connection):
     name = name + connection['cable_id']
     return name
 
+
 def cleanConnectionDistance(lastconnection, connection):
     """
     En caso de que el archivo tenga un espacio en la
     distancia, se reemplaza con cero.
     """
-    if connection['cable_length'] == '':
-        connection['cable_length'] = 0
-    if lastconnection['cable_length'] == '':
-        lastconnection['cable_length'] = 0
+    if connection['cable_length'] == 'n.a.':
+        connection['cable_length'] = "0"
+    if lastconnection['cable_length'] == 'n.a.':
+        lastconnection['cable_length'] = "0"
