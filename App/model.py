@@ -32,7 +32,7 @@ from DISClib.ADT import list as lt
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
-
+from DISClib.DataStructures import mapentry as me
 assert config
 
 """
@@ -56,7 +56,9 @@ def newAnalyzer():
                     'landing_points': None,
                     'connections': None,
                     'components': None,
-                    'paths': None
+                    'paths': None,
+                    "countries": None,
+                    "capital_landing_point":None
                     }
 
         analyzer['landing_points'] = m.newMap(numelements=14000,
@@ -67,6 +69,16 @@ def newAnalyzer():
                                               directed=True,
                                               size=14000,
                                               comparefunction=compareLandingPointIds)
+
+        analyzer['countries'] = m.newMap(numelements=260,
+                                     maptype='PROBING',
+                                     comparefunction=compareLandingPointIds) 
+
+        analyzer['capital_landing_point'] = m.newMap(numelements=260,
+                                     maptype='PROBING',
+                                     comparefunction=compareLandingPointIds)          
+
+
         return analyzer
 
     except Exception as exp:
@@ -167,6 +179,64 @@ def addRouteConnections(analyzer):
                 addConnection(analyzer, prevrout, route, local_distance)
                 addConnection(analyzer, route, prevrout, local_distance)
             prevrout = route
+
+
+
+def addCountryInfo(analyzer, country):
+
+    country_name = country["CountryName"]
+
+    m.put(analyzer["countries"], country_name, country)
+
+
+
+def addCapitalasVertex(analyzer, capital):
+
+    graph = analyzer["connections"]
+
+    gr.insertVertex(graph, capital)
+
+    return analyzer
+
+
+
+def addConnectiontoCapitalVertex(analyzer, capital_info, city):
+
+    graph = analyzer["connections"]
+
+    city_landing_point_id = city["landing_point_id"]
+    capital_name = capital_info["CapitalName"]
+
+    #TODO Actualizar distancia 
+    distance = 0
+
+    if m.contains(analyzer["landing_points"], city_landing_point_id):
+
+        entry = m.get(analyzer["landing_points"], city_landing_point_id)
+        cable_list = me.getValue(entry)
+
+        for cable in lt.iterator(cable_list):
+
+            vertex = city_landing_point_id + "-" + cable
+
+            gr.addEdge(graph, capital_name, vertex, distance)
+
+            gr.addEdge(graph, vertex, capital_name, distance)
+
+
+            #Se añade el cable de conexión
+            entry = m.get(analyzer['capital_landing_point'], capital_name)
+            if entry is None:
+                lstroutes = lt.newList(cmpfunction=compareroutes)
+                lt.addLast(lstroutes, cable)
+                m.put(analyzer['capital_landing_point'], capital_name, lstroutes)
+            else:
+                lstroutes = entry['value']
+                info = cable
+                if not lt.isPresent(lstroutes, info):
+                    lt.addLast(lstroutes, info)
+
+
 # Funciones para creacion de datos
 
 # Funciones de consulta

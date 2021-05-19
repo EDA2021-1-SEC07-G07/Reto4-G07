@@ -23,6 +23,8 @@
 import config as cf
 import model
 import csv
+from DISClib.ADT import map as m
+from DISClib.DataStructures import mapentry as me
 
 
 """
@@ -64,6 +66,46 @@ def loadConnections(analyzer, connectionsfile):
 
     model.addRouteConnections(analyzer) #Conexiones locales 
     return analyzer
+
+
+def loadCountries(analyzer, countriesfile):
+
+    countriesfile = cf.data_dir + countriesfile
+    input_file = csv.DictReader(open(countriesfile, encoding="utf-8-sig"),
+                                delimiter=",") 
+
+    for country in input_file:
+        model.addCountryInfo(analyzer, country)
+
+        capital_city = country["CapitalName"]
+        analyzer = model.addCapitalasVertex(analyzer, capital_city)
+
+    return analyzer
+
+
+def loadCapitalVertex(analyzer, capital_landing_points_file):
+
+    capital_landing_points_file = cf.data_dir + capital_landing_points_file
+    input_file = csv.DictReader(open(capital_landing_points_file, encoding="utf-8-sig"),
+                                delimiter=",") 
+
+    for city in input_file:
+
+        city_info = city["name"].split(", ")
+
+        city_country = city_info[-1]
+        city_name = city_info[0]
+    
+        if m.contains(analyzer["countries"], city_country):
+
+            entry = m.get(analyzer["countries"], city_country)
+            capital_info = me.getValue(entry)
+
+            model.addConnectiontoCapitalVertex(analyzer, capital_info, city)
+
+    return analyzer
+
+                
 
 
 # Funciones de ordenamiento

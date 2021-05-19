@@ -40,6 +40,8 @@ se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
 connectionsfile = "connections.csv"
+countriesfile = "countries.csv"
+capital_landing_points_file = "landing_points.csv"
 
 def printMenu():
     print("Bienvenido")
@@ -58,7 +60,11 @@ def printMenu():
 def optionTwo(analyzer):
 
     print("\nCargando información de cables submarinos ....")
-    analyzer = controller.loadConnections(analyzer, connectionsfile)
+    analyzer = controller.loadConnections(analyzer, connectionsfile) #Se crea el grafo principal con conexiones locales y remotas (submarinas)
+
+    analyzer = controller.loadCountries(analyzer, countriesfile) #Se crea un mapa de hash con los paises
+
+    analyzer = controller.loadCapitalVertex(analyzer, capital_landing_points_file)
 
 
 def optionThree(analyzer):
