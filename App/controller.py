@@ -95,6 +95,7 @@ def loadCapitalVertex(analyzer, capital_landing_points_file):
 
         city_country = city_info[-1]
         city_name = city_info[0]
+        city_landing_point_id = city["landing_point_id"]
     
         if m.contains(analyzer["countries"], city_country):
 
@@ -102,6 +103,9 @@ def loadCapitalVertex(analyzer, capital_landing_points_file):
             capital_info = me.getValue(entry)
 
             model.addConnectiontoCapitalVertex(analyzer, capital_info, city)
+        
+        info_map = analyzer["info_landing"]
+        m.put(info_map, city_landing_point_id, city)
 
     return analyzer
 
@@ -123,3 +127,16 @@ def totalConnections(analyzer):
     Total de enlaces entre vertices
     """
     return model.totalConnections(analyzer)
+
+
+def totalCountries(analyzer):
+
+    return model.totalCountries(analyzer)
+
+def getLandingPointPos(analyzer, pos):
+
+    return model.getLandingPointPos(analyzer, pos)
+
+def getCountryPos(analyzer, pos):
+
+    return model.getCountryPos(analyzer, pos)

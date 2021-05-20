@@ -59,7 +59,8 @@ def newAnalyzer():
                     'components': None,
                     'paths': None,
                     "countries": None,
-                    "capital_landing_point":None
+                    "capital_landing_point":None,
+                    "info_landing": None
                     }
 
         analyzer['landing_points'] = m.newMap(numelements=14000,
@@ -79,7 +80,9 @@ def newAnalyzer():
                                      maptype='PROBING',
                                      comparefunction=compareLandingPointIds)          
 
-
+        analyzer['info_landing'] = m.newMap(numelements=260,
+                                     maptype='PROBING',
+                                     comparefunction=compareLandingPointIds)   
         return analyzer
 
     except Exception as exp:
@@ -259,6 +262,46 @@ def totalConnections(analyzer):
     Retorna el total arcos del grafo
     """
     return gr.numEdges(analyzer['connections'])
+
+
+def totalCountries(analyzer):
+
+    return m.size(analyzer["countries"])
+
+
+def getLandingPointPos(analyzer, pos):
+
+    graph = analyzer["connections"]
+
+    vertex_list = gr.vertices(graph)
+
+    vertex = lt.getElement(vertex_list, pos)
+
+    vertex_landing_point = vertex.split("-")[0]
+
+    vertex_map = analyzer["info_landing"]
+
+    landing_point_info = m.get(vertex_map, vertex_landing_point)
+
+    return landing_point_info
+
+
+def getCountryPos(analyzer, pos):
+
+    country_map = analyzer["countries"]
+    last_element = None
+
+    #Si pos es igual a -1, se busca el último vértice 
+    if pos == -1:    
+        
+        country_list = m.valueSet(analyzer["countries"])
+
+        last_country = lt.lastElement(country_list)
+
+    return last_country
+
+
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

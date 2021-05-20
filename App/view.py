@@ -68,9 +68,21 @@ def optionTwo(analyzer):
 
     numedges = controller.totalConnections(analyzer)
     numvertex = controller.totalLandingPoints(analyzer)
-    print('Numero de vertices: ' + str(numvertex))
-    print('Numero de arcos: ' + str(numedges))
+    numcountries = controller.totalCountries(analyzer)
+    first_landing_point = controller.getLandingPointPos(analyzer, 1)
+    last_country_info = controller.getCountryPos(analyzer, -1)
+
+    name = last_country_info["CountryName"]
+    population = last_country_info["Population"]
+    internet_users = last_country_info["Internet users"]
+
+    print('Numero de Landing Points: ' + str(numvertex))
+    print('Numero de arcos (conexiones entre Landing Points): ' + str(numedges))
+    print("El número total de paises cargados: " + str(numcountries))
+    print("El primer landing point cargado es: " + str(first_landing_point))
+    print("último país cargado: Nombre: {}, Población: {}, Usuarios en internet: {}.".format(name, population, internet_users))
     print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
+    
 
 
 def optionThree(analyzer):
