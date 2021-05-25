@@ -74,11 +74,25 @@ def loadCountries(analyzer, countriesfile):
     input_file = csv.DictReader(open(countriesfile, encoding="utf-8-sig"),
                                 delimiter=",") 
 
+    capital_id = 24089
+
     for country in input_file:
-        model.addCountryInfo(analyzer, country)
+        model.addCountryInfo(analyzer, country, capital_id)
+
+        country["capital_id"] = capital_id
 
         capital_city = country["CapitalName"]
-        analyzer = model.addCapitalasVertex(analyzer, capital_city)
+        analyzer = model.addCapitalasVertex(analyzer, capital_city, capital_id)
+
+        #Se añade cada landing point a un mapa de hash determinado por el id del landing point
+        info_map = analyzer["info_landing_id"]
+        m.put(info_map, capital_id, country)
+
+        #Se añade cada landing point a un mapa de hash determinado por el nombre de la ciudad del landing point
+        info_map = analyzer["info_landing_name"]
+        m.put(info_map, capital_city, country)
+
+        capital_id += 1
 
     return analyzer
 
@@ -90,12 +104,13 @@ def loadCapitalVertex(analyzer, capital_landing_points_file):
                                 delimiter=",") 
 
     for city in input_file:
+        
 
         city_info = city["name"].split(", ")
 
         city_country = city_info[-1]
         city_name = city_info[0]
-        city_landing_point_id = city["landing_point_id"]
+        city_landing_point_id = int(city["landing_point_id"])
     
         if m.contains(analyzer["countries"], city_country):
 
@@ -189,3 +204,7 @@ def getStronglyConnected(analyzer, cluster, landing_point_1, landing_point_2):
                 if cluster_check == True:
 
                     return cluster_check
+
+def getLandingPointConnections(analyzer):
+
+    return model.getLandingPointConnections(analyzer)

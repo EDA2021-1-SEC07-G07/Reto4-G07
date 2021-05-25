@@ -79,7 +79,7 @@ def optionTwo(analyzer):
     print('Numero de Landing Points: ' + str(numvertex))
     print('Numero de arcos (conexiones entre Landing Points): ' + str(numedges))
     print("El número total de paises cargados: " + str(numcountries))
-    print("El primer landing point cargado es: " + str(first_landing_point))
+    print("El primer landing point cargado es: " + str(first_landing_point)) #TODO FORMATEAR PRINT!
     print("último país cargado: Nombre: {}, Población: {}, Usuarios en internet: {}.".format(name, population, internet_users))
     print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
     
@@ -110,8 +110,10 @@ def optionThree(analyzer):
 
 
 
-def optionFour(analyzer, initialStation):
-    pass
+def optionFour(analyzer):
+    
+    interconnected_landing_points = controller.getLandingPointConnections(analyzer)
+    #TODO FORMATEAR PRINT!
 
 def optionFive(analyzer, destStation):
     pass
@@ -151,6 +153,9 @@ def thread_cycle():
 
         elif int(inputs[0]) == 3:
             optionThree(analyzer)
+
+        elif int(inputs[0]) == 4:
+            optionFour(analyzer)
 
 
         else:

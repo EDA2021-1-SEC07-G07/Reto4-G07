@@ -34,6 +34,7 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 from DISClib.DataStructures import mapentry as me
 from math import radians, cos, sin, asin, sqrt
+from DISClib.Algorithms.Sorting import mergesort 
 assert config
 
 """
@@ -193,7 +194,7 @@ def addRouteConnections(analyzer):
 
 
 
-def addCountryInfo(analyzer, country):
+def addCountryInfo(analyzer, country, capital_id):
 
     country_name = country["CountryName"]
 
@@ -201,11 +202,12 @@ def addCountryInfo(analyzer, country):
 
 
 
-def addCapitalasVertex(analyzer, capital):
+def addCapitalasVertex(analyzer, capital, capital_id):
 
     graph = analyzer["connections"]
+    capital_id = str(capital_id)
 
-    gr.insertVertex(graph, capital)
+    gr.insertVertex(graph, capital_id)
 
     return analyzer
 
@@ -217,6 +219,7 @@ def addConnectiontoCapitalVertex(analyzer, capital_info, city):
 
     city_landing_point_id = city["landing_point_id"]
     capital_name = capital_info["CapitalName"]
+    capital_id = str(capital_info["capital_id"])
 
     capital_lat = float(capital_info["CapitalLatitude"])
     capital_long = float(capital_info["CapitalLongitude"])
@@ -236,17 +239,17 @@ def addConnectiontoCapitalVertex(analyzer, capital_info, city):
 
             vertex = city_landing_point_id + "-" + cable
 
-            gr.addEdge(graph, capital_name, vertex, distance)
+            gr.addEdge(graph, capital_id, vertex, distance)
 
-            gr.addEdge(graph, vertex, capital_name, distance)
+            gr.addEdge(graph, vertex, capital_id, distance)
 
 
             #Se añade el cable de conexión
-            entry = m.get(analyzer['landing_points'], capital_name)
+            entry = m.get(analyzer['landing_points'], capital_id)
             if entry is None:
                 lstroutes = lt.newList(cmpfunction=compareroutes)
                 lt.addLast(lstroutes, cable)
-                m.put(analyzer['landing_points'], capital_name, lstroutes)
+                m.put(analyzer['landing_points'], capital_id, lstroutes)
             else:
                 lstroutes = entry['value']
                 info = cable
@@ -284,7 +287,7 @@ def getLandingPointPos(analyzer, pos):
 
     vertex = lt.getElement(vertex_list, pos)
 
-    vertex_landing_point = vertex.split("-")[0]
+    vertex_landing_point = int(vertex.split("-")[0])
 
     vertex_map = analyzer["info_landing_id"]
 
@@ -327,7 +330,57 @@ def getStronglyConnected(analyzer, cluster, landing_point_1, landing_point_2):
     return strongly_connected
 
 
+
+def getLandingPointConnections(analyzer):
+
+    vertex_map = analyzer["landing_points"]
+    vertex_list = m.keySet(vertex_map)
+    landing_point_list = lt.newList(datastructure = "ARRAY_LIST")
+    
+    for vertex_key in lt.iterator(vertex_list):
+
+        temp_list = lt.newList(datastructure = "ARRAY_LIST")
+        vertex_value = lt.size(me.getValue(m.get(vertex_map, vertex_key)))
+
+        lt.addLast(temp_list, vertex_key)
+        lt.addLast(temp_list, vertex_value)
+
+        lt.addLast(landing_point_list, temp_list)
+
+    sorted_vertex_list = mergesort.sort(landing_point_list, cmpnumberofcables)
+    
+    top_10_vertex_list = lt.subList(sorted_vertex_list, 1, 10)
+    top_10_vertex_list_final = lt.newList(datastructure = "ARRAY_LIST")
+
+    for top_vertex in lt.iterator(top_10_vertex_list):
+
+        top_vertex_id = int(lt.getElement(top_vertex, 1))
+
+        top_vertex_info = me.getValue(m.get(analyzer["info_landing_id"], top_vertex_id))
+        top_vertex_info["connected_cables"] = lt.getElement(top_vertex, 2)
+
+        lt.addLast(top_10_vertex_list_final, top_vertex_info)
+
+    #SE RETORNA UNA LISTA (TIPO LST) QUE CONTIENE 10 DICCIONARIOS
+    return top_10_vertex_list_final
+
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def cmpnumberofcables(vertex_1, vertex_2):
+
+    size_1 = lt.getElement(vertex_1, 2)
+    size_2 = lt.getElement(vertex_2, 2)
+
+    if size_1 > size_2:
+
+        return True
+
+    else:
+        return False
+
+    
+
+
 
 # Funciones de ordenamiento
 
