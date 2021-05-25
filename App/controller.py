@@ -161,18 +161,24 @@ def getStronglyConnected(analyzer, cluster, landing_point_1, landing_point_2):
     vertex_map = analyzer["landing_points"]
     names_map = analyzer["info_landing_name"]
 
+    #Se accede al mapa cuyas llaves son los nombres para obtener el id correspondiente al landing_point
     landing_point_1_id = me.getValue(m.get(names_map, landing_point_1))["landing_point_id"]
     landing_point_2_id = me.getValue(m.get(names_map, landing_point_2))["landing_point_id"]
 
+    #Una vez se ha obtenido el id, se accede al mapa con los landing_points y sus respectivos cables
     landing_point_1_vertices_entry = m.get(vertex_map, landing_point_1_id)
     landing_point_2_vertices_entry = m.get(vertex_map, landing_point_2_id)
 
+    #Se obtiene una lista con los cables
     landing_point_1_vertices_lst = me.getValue(landing_point_1_vertices_entry)
     landing_point_2_vertices_lst = me.getValue(landing_point_2_vertices_entry)
 
+    #Mediante la iteración de todos los cables (tanto landing_point_1 como landing_point_2) es posible encontrar los
+    #vértices relacionados a esta búsqueda.
     for landing_point_A in lt.iterator(landing_point_1_vertices_lst):
         for landing_point_B in lt.iterator(landing_point_2_vertices_lst):
 
+            #Se evalua si ambos landing_points se encuentran conectados por el mismo cable (de lo contrario no hay conexión)
             if landing_point_A == landing_point_B:
 
                 complete_landing_point_1 = "{}-{}".format(landing_point_1_id, landing_point_A)

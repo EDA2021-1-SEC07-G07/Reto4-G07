@@ -66,11 +66,11 @@ def optionTwo(analyzer):
 
     analyzer = controller.loadCapitalVertex(analyzer, capital_landing_points_file)#Se crean las conexiones entre el vertice capital y las diferentes ciudades
 
-    numedges = controller.totalConnections(analyzer)
-    numvertex = controller.totalLandingPoints(analyzer)
-    numcountries = controller.totalCountries(analyzer)
-    first_landing_point = controller.getLandingPointPos(analyzer, 1)
-    last_country_info = controller.getCountryPos(analyzer, -1)
+    numedges = controller.totalConnections(analyzer) #Se obtiene el número total de arcos
+    numvertex = controller.totalLandingPoints(analyzer) #Se obtiene el número total de vértices
+    numcountries = controller.totalCountries(analyzer) #Se obtiene el número total de paises con cables registrados en el grafo
+    first_landing_point = controller.getLandingPointPos(analyzer, 1) #Se obtiene la información del primer landing point
+    last_country_info = controller.getCountryPos(analyzer, -1) #Se obtiene la información del último landing point cargado
 
     name = last_country_info["CountryName"]
     population = last_country_info["Population"]
@@ -87,13 +87,16 @@ def optionTwo(analyzer):
 
 def optionThree(analyzer):
     
+    #En primera instancia, se obtiene una estructura que diferencia los componentes fuertemente conectados (clusters)
     cluster = controller.getCluster(analyzer)
     
+    #Se obtiene el número de clusters dentro de la estructura ya obtenida
     cluster_number = controller.getClusterSize(cluster)
 
     landing_point_1 = input("Ingrese el nombre del primer landing point que desea evaluar: ")
     landing_point_2 = input("Ingrese el nombre del segundo landing point que desea evaluar: ")
 
+    #Se evalua si los landing_points ingresados están conectados en el mismo cluster
     strongly_connected_landing_points = controller.getStronglyConnected(analyzer, cluster, landing_point_1, landing_point_2)
 
     if strongly_connected_landing_points == True:
