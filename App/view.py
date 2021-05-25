@@ -86,7 +86,26 @@ def optionTwo(analyzer):
 
 
 def optionThree(analyzer):
-    pass
+    
+    cluster = controller.getCluster(analyzer)
+    
+    cluster_number = controller.getClusterSize(cluster)
+
+    landing_point_1 = input("Ingrese el nombre del primer landing point que desea evaluar: ")
+    landing_point_2 = input("Ingrese el nombre del segundo landing point que desea evaluar: ")
+
+    strongly_connected_landing_points = controller.getStronglyConnected(analyzer, cluster, landing_point_1, landing_point_2)
+
+    if strongly_connected_landing_points == True:
+        strongly_connected_landing_points = "SÍ."
+
+    else:
+        strongly_connected_landing_points = "NO."
+
+    print("\nEl número total de clusters en la red es de: {}".format(cluster_number))
+    print("¿El landing point {} y el landing point {} están en el mismo cluster? {}".format(landing_point_1, landing_point_2, strongly_connected_landing_points))
+
+
 
 def optionFour(analyzer, initialStation):
     pass
@@ -126,6 +145,9 @@ def thread_cycle():
 
         elif int(inputs[0]) == 2:
             optionTwo(analyzer)
+
+        elif int(inputs[0]) == 3:
+            optionThree(analyzer)
 
 
         else:

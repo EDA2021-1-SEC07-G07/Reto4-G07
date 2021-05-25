@@ -25,7 +25,7 @@ import model
 import csv
 from DISClib.ADT import map as m
 from DISClib.DataStructures import mapentry as me
-
+from DISClib.ADT import list as lt
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -103,9 +103,15 @@ def loadCapitalVertex(analyzer, capital_landing_points_file):
             capital_info = me.getValue(entry)
 
             model.addConnectiontoCapitalVertex(analyzer, capital_info, city)
-        
-        info_map = analyzer["info_landing"]
+
+        #Se añade cada landing point a un mapa de hash determinado por el id del landing point
+        info_map = analyzer["info_landing_id"]
         m.put(info_map, city_landing_point_id, city)
+
+        #Se añade cada landing point a un mapa de hash determinado por el nombre de la ciudad del landing point
+        info_map = analyzer["info_landing_name"]
+        m.put(info_map, city_name, city)
+
 
     return analyzer
 
@@ -140,3 +146,40 @@ def getLandingPointPos(analyzer, pos):
 def getCountryPos(analyzer, pos):
 
     return model.getCountryPos(analyzer, pos)
+
+
+def getCluster(analyzer):
+
+    return model.getCluster(analyzer)
+
+def getClusterSize(cluster):
+
+    return model.getClusterSize(cluster)
+
+
+def getStronglyConnected(analyzer, cluster, landing_point_1, landing_point_2):
+    vertex_map = analyzer["landing_points"]
+    names_map = analyzer["info_landing_name"]
+
+    landing_point_1_id = me.getValue(m.get(names_map, landing_point_1))["landing_point_id"]
+    landing_point_2_id = me.getValue(m.get(names_map, landing_point_2))["landing_point_id"]
+
+    landing_point_1_vertices_entry = m.get(vertex_map, landing_point_1_id)
+    landing_point_2_vertices_entry = m.get(vertex_map, landing_point_2_id)
+
+    landing_point_1_vertices_lst = me.getValue(landing_point_1_vertices_entry)
+    landing_point_2_vertices_lst = me.getValue(landing_point_2_vertices_entry)
+
+    for landing_point_A in lt.iterator(landing_point_1_vertices_lst):
+        for landing_point_B in lt.iterator(landing_point_2_vertices_lst):
+
+            if landing_point_A == landing_point_B:
+
+                complete_landing_point_1 = "{}-{}".format(landing_point_1_id, landing_point_A)
+                complete_landing_point_2 = "{}-{}".format(landing_point_2_id, landing_point_B)
+
+                cluster_check = model.getStronglyConnected(analyzer, cluster, complete_landing_point_1, complete_landing_point_2)
+
+                if cluster_check == True:
+
+                    return cluster_check

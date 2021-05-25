@@ -60,7 +60,8 @@ def newAnalyzer():
                     'paths': None,
                     "countries": None,
                     "capital_landing_point":None,
-                    "info_landing": None
+                    "info_landing_id": None,
+                    "info_landing_name": None
                     }
 
         analyzer['landing_points'] = m.newMap(numelements=14000,
@@ -74,15 +75,19 @@ def newAnalyzer():
 
         analyzer['countries'] = m.newMap(numelements=260,
                                      maptype='PROBING',
-                                     comparefunction=compareLandingPointIds) 
+                                     comparefunction=compareLandingPointIds)         
 
-        analyzer['capital_landing_point'] = m.newMap(numelements=260,
+        analyzer['info_landing_id'] = m.newMap(numelements=260,
                                      maptype='PROBING',
-                                     comparefunction=compareLandingPointIds)          
+                                     comparefunction=compareLandingPointIds)
 
-        analyzer['info_landing'] = m.newMap(numelements=260,
+
+        analyzer['info_landing_name'] = m.newMap(numelements=260,
                                      maptype='PROBING',
                                      comparefunction=compareLandingPointIds)   
+   
+
+
         return analyzer
 
     except Exception as exp:
@@ -155,6 +160,8 @@ def addCableLandingPoint(analyzer, connection):
         lstroutes = lt.newList(cmpfunction=compareroutes)
         lt.addLast(lstroutes, connection['cable_id'])
         m.put(analyzer['landing_points'], connection['destination'], lstroutes)
+
+
     else:
         lstroutes = entry['value']
         info = connection['cable_id']
@@ -235,11 +242,11 @@ def addConnectiontoCapitalVertex(analyzer, capital_info, city):
 
 
             #Se añade el cable de conexión
-            entry = m.get(analyzer['capital_landing_point'], capital_name)
+            entry = m.get(analyzer['landing_points'], capital_name)
             if entry is None:
                 lstroutes = lt.newList(cmpfunction=compareroutes)
                 lt.addLast(lstroutes, cable)
-                m.put(analyzer['capital_landing_point'], capital_name, lstroutes)
+                m.put(analyzer['landing_points'], capital_name, lstroutes)
             else:
                 lstroutes = entry['value']
                 info = cable
@@ -279,7 +286,7 @@ def getLandingPointPos(analyzer, pos):
 
     vertex_landing_point = vertex.split("-")[0]
 
-    vertex_map = analyzer["info_landing"]
+    vertex_map = analyzer["info_landing_id"]
 
     landing_point_info = m.get(vertex_map, vertex_landing_point)
 
@@ -301,6 +308,23 @@ def getCountryPos(analyzer, pos):
     return last_country
 
 
+def getCluster(analyzer):
+
+    cluster_data = scc.KosarajuSCC(analyzer["connections"])
+
+    return cluster_data
+
+
+def getClusterSize(cluster):
+
+    cluster_number = scc.connectedComponents(cluster)
+    return cluster_number
+
+def getStronglyConnected(analyzer, cluster, landing_point_1, landing_point_2):
+
+    strongly_connected = scc.stronglyConnected(cluster, landing_point_1, landing_point_2)
+
+    return strongly_connected
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
