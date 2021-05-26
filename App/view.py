@@ -133,8 +133,10 @@ def optionFive(analyzer):
     print(minimum_total_distance)
     print(minimum_route)
 
-def optionSix(analyzer, destStation):
-    pass
+def optionSix(analyzer):
+    
+    minimum_spanning_tree = controller.getMST(analyzer)
+    print(minimum_spanning_tree) #TODO - FORMATEAR PRINT!
 
 def optionSeven(analyzer):
     pass
@@ -174,6 +176,9 @@ def thread_cycle():
 
         elif int(inputs[0]) == 5:
             optionFive(analyzer)
+
+        elif int(inputs[0]) == 6:
+            optionSix(analyzer)
 
 
         else:

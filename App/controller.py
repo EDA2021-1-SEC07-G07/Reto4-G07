@@ -147,7 +147,10 @@ def loadCapitalVertex(analyzer, capital_landing_points_file):
 
     return analyzer
 
-                
+
+def getMST(analyzer):
+
+    return model.getMST(analyzer)    
 
 
 # Funciones de ordenamiento

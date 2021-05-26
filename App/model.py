@@ -29,12 +29,16 @@ import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
+from DISClib.ADT import indexminpq as pq
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import prim
 from DISClib.Utils import error as error
 from DISClib.DataStructures import mapentry as me
+from DISClib.DataStructures import indexheap as iheap
 from math import radians, cos, sin, asin, sqrt
 from DISClib.Algorithms.Sorting import mergesort 
+import random
 assert config
 
 """
@@ -70,7 +74,7 @@ def newAnalyzer():
                                      comparefunction=compareLandingPointIds)
 
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=True,
+                                              directed=False,
                                               size=14000,
                                               comparefunction=compareLandingPointIds)
 
@@ -399,7 +403,30 @@ def minimumCountryRoute(analyzer, country_A, country_B):
         return None
 
 
-    
+def getMST(analyzer):
+
+
+
+    vertex_list = m.keySet(analyzer["landing_points"])
+    vertex_amount = lt.size(vertex_list)
+
+    random_number = random.randrange(1, vertex_amount)
+    random_vertex_key = lt.getElement(vertex_list, random_number)
+    random_vertex_value = lt.firstElement(me.getValue(m.get(analyzer["landing_points"], random_vertex_key)))
+
+    random_vertex = "{}-{}".format(random_vertex_key, random_vertex_value)
+
+ 
+    MST = prim.PrimMST(analyzer["connections"])
+    MST_vertex = MST["mst"]
+
+    MST_weight = prim.weightMST(analyzer["connections"], MST)
+    MST_connected_nodes = MST_vertex["size"]
+
+    #TODO Falta completar el resto de la información que toca imprimir!
+    return (MST_weight, MST_connected_nodes)
+
+
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
