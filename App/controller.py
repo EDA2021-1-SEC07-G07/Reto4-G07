@@ -96,6 +96,32 @@ def loadCountries(analyzer, countriesfile):
 
     return analyzer
 
+def createReferenceMaps(analyzer, capital_landing_points_file):
+
+    capital_landing_points_file = cf.data_dir + capital_landing_points_file
+    input_file = csv.DictReader(open(capital_landing_points_file, encoding="utf-8-sig"),
+                                delimiter=",") 
+
+    for city in input_file:
+
+        city_info = city["name"].split(", ")
+
+        city_country = city_info[-1]
+        city_name = city_info[0]
+        city_landing_point_id = int(city["landing_point_id"])
+
+        
+        #Se añade cada landing point a un mapa de hash determinado por el id del landing point
+        info_map = analyzer["info_landing_id"]
+        m.put(info_map, city_landing_point_id, city)
+
+        #Se añade cada landing point a un mapa de hash determinado por el nombre de la ciudad del landing point
+        info_map = analyzer["info_landing_name"]
+        m.put(info_map, city_name, city)
+
+    return analyzer
+
+
 
 def loadCapitalVertex(analyzer, capital_landing_points_file):
 
@@ -118,15 +144,6 @@ def loadCapitalVertex(analyzer, capital_landing_points_file):
             capital_info = me.getValue(entry)
 
             model.addConnectiontoCapitalVertex(analyzer, capital_info, city)
-
-        #Se añade cada landing point a un mapa de hash determinado por el id del landing point
-        info_map = analyzer["info_landing_id"]
-        m.put(info_map, city_landing_point_id, city)
-
-        #Se añade cada landing point a un mapa de hash determinado por el nombre de la ciudad del landing point
-        info_map = analyzer["info_landing_name"]
-        m.put(info_map, city_name, city)
-
 
     return analyzer
 
@@ -208,3 +225,8 @@ def getStronglyConnected(analyzer, cluster, landing_point_1, landing_point_2):
 def getLandingPointConnections(analyzer):
 
     return model.getLandingPointConnections(analyzer)
+
+
+def minimumCountryRoute(analyzer, country_A, country_B):
+
+    return model.minimumCountryRoute(analyzer, country_A, country_B)

@@ -115,9 +115,16 @@ def addStopConnection(analyzer, lastconnection, connection):
 
         cleanConnectionDistance(lastconnection, connection)
 
-        cable_length = connection['cable_length'].split()[0].replace(",","")
+        origin_landing_point = int(origin.split("-")[0])
+        destination_landing_point = int(destination.split("-")[0])
 
-        distance = float(cable_length)
+        origin_latitude = float(me.getValue(m.get(analyzer["info_landing_id"], origin_landing_point))["latitude"])
+        origin_longitude = float(me.getValue(m.get(analyzer["info_landing_id"], origin_landing_point))["longitude"])
+
+        destination_latitude = float(me.getValue(m.get(analyzer["info_landing_id"], destination_landing_point))["latitude"])
+        destination_longitude = float(me.getValue(m.get(analyzer["info_landing_id"], destination_landing_point))["longitude"])
+
+        distance = haversine(origin_latitude, origin_longitude, destination_latitude, destination_longitude)
 
         addLandingPoint(analyzer, origin)
         addLandingPoint(analyzer, destination)
@@ -363,6 +370,36 @@ def getLandingPointConnections(analyzer):
 
     #SE RETORNA UNA LISTA (TIPO LST) QUE CONTIENE 10 DICCIONARIOS
     return top_10_vertex_list_final
+
+
+
+
+
+
+def minimumCountryRoute(analyzer, country_A, country_B):
+
+    graph = analyzer["connections"]
+    country_map = analyzer["countries"]
+    capital_name_map = analyzer["info_landing_id"]
+
+    capital_city_A_vertex = str(me.getValue(m.get(country_map, country_A))["capital_id"])
+    capital_city_B_vertex = str(me.getValue(m.get(country_map, country_B))["capital_id"])
+
+    dijkstra_search = djk.Dijkstra(graph, capital_city_A_vertex)
+
+    if djk.hasPathTo(dijkstra_search, capital_city_B_vertex):
+
+        dijkstra_cost = djk.distTo(dijkstra_search, capital_city_B_vertex)
+        dijkstra_route = djk.pathTo(dijkstra_search, capital_city_B_vertex)
+        
+        return (dijkstra_cost, dijkstra_route)
+
+    else:
+
+        return None
+
+
+    
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

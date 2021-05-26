@@ -60,11 +60,15 @@ def printMenu():
 def optionTwo(analyzer):
 
     print("\nCargando información de cables submarinos ....")
+
+    analyzer = controller.createReferenceMaps(analyzer, capital_landing_points_file)
+
     analyzer = controller.loadConnections(analyzer, connectionsfile) #Se crea el grafo principal con conexiones locales y remotas (submarinas)
 
     analyzer = controller.loadCountries(analyzer, countriesfile) #Se crea un mapa de hash con los paises y se genera un vértice terrestre por capital
 
     analyzer = controller.loadCapitalVertex(analyzer, capital_landing_points_file)#Se crean las conexiones entre el vertice capital y las diferentes ciudades
+
 
     numedges = controller.totalConnections(analyzer) #Se obtiene el número total de arcos
     numvertex = controller.totalLandingPoints(analyzer) #Se obtiene el número total de vértices
@@ -113,10 +117,21 @@ def optionThree(analyzer):
 def optionFour(analyzer):
     
     interconnected_landing_points = controller.getLandingPointConnections(analyzer)
-    #TODO FORMATEAR PRINT!
+    print(interconnected_landing_points)#TODO FORMATEAR PRINT!
 
-def optionFive(analyzer, destStation):
-    pass
+def optionFive(analyzer):
+    
+    country_A = input("Ingrese el país desde el que desea encontrar la ruta mínima: ")
+    country_B = input("Ingrese el país hasta el que desea encontrar la ruta mínima: ")
+
+    dijkstra_info = controller.minimumCountryRoute(analyzer, country_A, country_B)
+
+    minimum_total_distance = dijkstra_info[0]
+    minimum_route = dijkstra_info[1]
+
+    #TODO-FORMATEAR PRINT!
+    print(minimum_total_distance)
+    print(minimum_route)
 
 def optionSix(analyzer, destStation):
     pass
@@ -156,6 +171,9 @@ def thread_cycle():
 
         elif int(inputs[0]) == 4:
             optionFour(analyzer)
+
+        elif int(inputs[0]) == 5:
+            optionFive(analyzer)
 
 
         else:
