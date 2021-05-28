@@ -448,12 +448,16 @@ def getAdjacentVertices(analyzer, landing_point):
     return adjacent_list
 
 
-def getAdjacentCountries(analyzer, adjacent_vertices):
+def getAdjacentCountries(analyzer, adjacent_vertices, landing_point):
 
     landing_map = analyzer["info_landing_id"]
 
+    landing_map_name = analyzer["info_landing_name"]
+
     adjacent_countries = m.newMap(numelements=260,
                                      maptype='PROBING')
+
+    adjacent_countries_list = lt.newList(datastructure = "ARRAY_LIST")
 
 
     for cable in lt.iterator(adjacent_vertices):
@@ -472,10 +476,31 @@ def getAdjacentCountries(analyzer, adjacent_vertices):
                 #The cable is connected to a capital
                 adjacent_country = adjacent_info["CountryName"]
 
-        
-            m.put(adjacent_countries, adjacent_country, None)
+            if not m.contains(adjacent_countries, adjacent_country):
 
-    return adjacent_countries
+                actual_landing_point_lat = float(me.getValue(m.get(landing_map_name, landing_point))["latitude"])
+                actual_landing_point_lon = float(me.getValue(m.get(landing_map_name, landing_point))["longitude"])
+
+                adjacent_country_lat = float(me.getValue(m.get(analyzer["countries"], adjacent_country))["CapitalLatitude"])
+                adjacent_countries_lon = float(me.getValue(m.get(analyzer["countries"], adjacent_country))["CapitalLongitude"])
+
+                adjacent_country_distance = haversine(actual_landing_point_lat, actual_landing_point_lon, adjacent_country_lat, adjacent_countries_lon)
+
+                m.put(adjacent_countries, adjacent_country, adjacent_country_distance)
+
+    
+    for key in lt.iterator(m.keySet(adjacent_countries)):
+
+        value = me.getValue(m.get(adjacent_countries, key))
+
+        mini_list = lt.newList(datastructure = "ARRAY_LIST")
+        lt.addLast(mini_list, key)
+        lt.addLast(mini_list, value)
+
+        lt.addLast(adjacent_countries_list, mini_list)
+
+    
+    return adjacent_countries_list
             
 
 # Funciones utilizadas para comparar elementos dentro de una lista

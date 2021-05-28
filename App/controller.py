@@ -240,6 +240,6 @@ def getAdjacentVertices(analyzer, landing_point):
 
     return model.getAdjacentVertices(analyzer, landing_point)
 
-def getAdjacentCountries(analyzer, adjacent_vertices):
+def getAdjacentCountries(analyzer, adjacent_vertices, landing_point):
 
-    return model.getAdjacentCountries(analyzer, adjacent_vertices)
+    return model.getAdjacentCountries(analyzer, adjacent_vertices, landing_point)

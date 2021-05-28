@@ -144,8 +144,9 @@ def optionSeven(analyzer):
 
     adjacent_vertices = controller.getAdjacentVertices(analyzer, landing_point)
 
-    adjacent_countries = controller.getAdjacentCountries(analyzer, adjacent_vertices)
+    adjacent_countries = controller.getAdjacentCountries(analyzer, adjacent_vertices, landing_point)
 
+    print(adjacent_countries)
 
 def optionEight(analyzer):
     pass
