@@ -148,9 +148,9 @@ def optionSeven(analyzer):
 
     sorted_adjacent_countries = controller.sortAdjacentCountries(adjacent_countries)
 
-    print(sorted_adjacent_countries)
+    print(sorted_adjacent_countries) #TODO-FORMATEAR PRINT!
 
-    print(adjacent_countries)
+
 
 def optionEight(analyzer):
     pass
