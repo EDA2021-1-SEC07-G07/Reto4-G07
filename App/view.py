@@ -139,7 +139,13 @@ def optionSix(analyzer):
     print(minimum_spanning_tree) #TODO - FORMATEAR PRINT!
 
 def optionSeven(analyzer):
-    pass
+    
+    landing_point = input("Ingrese el nombre del landing point respecto al cual quiere determinar los efectos de su fallo: ")
+
+    adjacent_vertices = controller.getAdjacentVertices(analyzer, landing_point)
+
+    adjacent_countries = controller.getAdjacentCountries(analyzer, adjacent_vertices)
+
 
 def optionEight(analyzer):
     pass
@@ -179,6 +185,9 @@ def thread_cycle():
 
         elif int(inputs[0]) == 6:
             optionSix(analyzer)
+
+        elif int(inputs[0]) == 7:
+            optionSeven(analyzer)
 
 
         else:

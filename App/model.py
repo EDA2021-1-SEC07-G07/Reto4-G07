@@ -427,6 +427,56 @@ def getMST(analyzer):
     return (MST_weight, MST_connected_nodes)
 
 
+def getAdjacentVertices(analyzer, landing_point):
+
+    graph = analyzer["connections"]
+
+    landing_point_id = me.getValue(m.get(analyzer["info_landing_name"], landing_point))["landing_point_id"]
+
+    vertex_list = me.getValue(m.get(analyzer["landing_points"], landing_point_id))
+
+    adjacent_list = lt.newList(datastructure = "ARRAY_LIST")
+
+    for vertex in lt.iterator(vertex_list):
+
+        vertex_name = landing_point_id + "-" + vertex
+
+        temp_list = gr.adjacents(graph, vertex_name)
+
+        lt.addLast(adjacent_list, temp_list)
+
+    return adjacent_list
+
+
+def getAdjacentCountries(analyzer, adjacent_vertices):
+
+    landing_map = analyzer["info_landing_id"]
+
+    adjacent_countries = m.newMap(numelements=260,
+                                     maptype='PROBING')
+
+
+    for cable in lt.iterator(adjacent_vertices):
+
+        for vertex in lt.iterator(cable):
+
+            adjacent_landing = int(vertex.split("-")[0])
+
+            adjacent_info = me.getValue(m.get(landing_map, adjacent_landing))
+
+            if "name" in adjacent_info.keys():
+                #Then the adjacent cable belongs to a normal city
+                adjacent_country = adjacent_info["name"].split(", ")[-1]
+
+            else:
+                #The cable is connected to a capital
+                adjacent_country = adjacent_info["CountryName"]
+
+        
+            m.put(adjacent_countries, adjacent_country, None)
+
+    return adjacent_countries
+            
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

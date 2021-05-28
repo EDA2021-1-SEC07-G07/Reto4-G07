@@ -233,3 +233,13 @@ def getLandingPointConnections(analyzer):
 def minimumCountryRoute(analyzer, country_A, country_B):
 
     return model.minimumCountryRoute(analyzer, country_A, country_B)
+
+
+
+def getAdjacentVertices(analyzer, landing_point):
+
+    return model.getAdjacentVertices(analyzer, landing_point)
+
+def getAdjacentCountries(analyzer, adjacent_vertices):
+
+    return model.getAdjacentCountries(analyzer, adjacent_vertices)
