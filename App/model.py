@@ -503,6 +503,18 @@ def getAdjacentCountries(analyzer, adjacent_vertices, landing_point):
     return adjacent_countries_list
             
 
+
+
+
+def sortAdjacentCountries(adjacent_countries):
+
+    sorted_list = mergesort.sort(adjacent_countries, cmpCountriesDist)
+
+    return sorted_list
+
+
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 def cmpnumberofcables(vertex_1, vertex_2):
@@ -546,7 +558,16 @@ def compareroutes(route1, route2):
     else:
         return -1
 
+def cmpCountriesDist(country_1, country_2):
 
+    country_dist_1 = lt.getElement(country_1, 2)
+    country_dist_2 =  lt.getElement(country_2, 2)
+
+    if country_dist_1 > country_dist_2:
+        return True
+
+    else:
+        return False
 
 # Funciones de ayuda 
 def formatOriginVertex(connection):

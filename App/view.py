@@ -146,6 +146,10 @@ def optionSeven(analyzer):
 
     adjacent_countries = controller.getAdjacentCountries(analyzer, adjacent_vertices, landing_point)
 
+    sorted_adjacent_countries = controller.sortAdjacentCountries(adjacent_countries)
+
+    print(sorted_adjacent_countries)
+
     print(adjacent_countries)
 
 def optionEight(analyzer):

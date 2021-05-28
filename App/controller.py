@@ -243,3 +243,8 @@ def getAdjacentVertices(analyzer, landing_point):
 def getAdjacentCountries(analyzer, adjacent_vertices, landing_point):
 
     return model.getAdjacentCountries(analyzer, adjacent_vertices, landing_point)
+
+
+def sortAdjacentCountries(adjacent_countries):
+
+    return model.sortAdjacentCountries(adjacent_countries)
