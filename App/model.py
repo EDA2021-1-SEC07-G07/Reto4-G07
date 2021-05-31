@@ -35,6 +35,8 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Algorithms.Graphs import prim
 from DISClib.Utils import error as error
 from DISClib.DataStructures import mapentry as me
+from DISClib.DataStructures import bst 
+from DISClib.DataStructures import rbt
 from DISClib.DataStructures import indexheap as iheap
 from math import radians, cos, sin, asin, sqrt
 from DISClib.Algorithms.Sorting import mergesort 
@@ -74,7 +76,7 @@ def newAnalyzer():
                                      comparefunction=compareLandingPointIds)
 
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=False,
+                                              directed=True,
                                               size=14000,
                                               comparefunction=compareLandingPointIds)
 
@@ -418,13 +420,14 @@ def getMST(analyzer):
 
  
     MST = prim.PrimMST(analyzer["connections"])
-    MST_vertex = MST["mst"]
+    MST_tree = MST["mst"]
 
     MST_weight = prim.weightMST(analyzer["connections"], MST)
-    MST_connected_nodes = MST_vertex["size"]
+    MST_connected_nodes = MST_tree["size"]
+    MST_largest_branch = MST_connected_nodes - 1
 
-    #TODO Falta completar el resto de la información que toca imprimir!
-    return (MST_weight, MST_connected_nodes)
+    #TODO 
+    return (MST_weight, MST_connected_nodes, MST_largest_branch)
 
 
 def getAdjacentVertices(analyzer, landing_point):
