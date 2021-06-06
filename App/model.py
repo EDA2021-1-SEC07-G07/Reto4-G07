@@ -40,6 +40,7 @@ from DISClib.DataStructures import rbt
 from DISClib.DataStructures import indexheap as iheap
 from math import radians, cos, sin, asin, sqrt
 from DISClib.Algorithms.Sorting import mergesort 
+import ipapi
 import random
 assert config
 
@@ -564,6 +565,54 @@ def getMaxBandwidthCountry(analyzer, country_name, cable_name):
 
 
     return adjacent_max_bandwidth_country_map
+
+
+def getIPInfo(ip):
+
+    return ipapi.location(ip)
+
+
+
+
+def getClosestLPtoIP(analyzer, ip_info):
+
+    ip_latitude = ip_info["latitude"]
+    ip_longitude = ip_info["longitude"]
+    previous_hav_distance = -1
+    closest_LP = None
+
+    #Jump to the Capital City 
+    ip_country = ip_info["country_name"]
+    ip_capital = me.getValue(m.get(analyzer["countries"], ip_country))["CapitalName"]
+
+    closest_LP = me.getValue(m.get(analyzer["info_landing_name"], ip_capital))["capital_id"]
+
+    return closest_LP
+
+
+def getMinimumRouteLP(analyzer, ip_1_closest_lp, ip_2_closest_lp):
+
+    graph = analyzer["connections"]
+
+    dijkstra_search = djk.Dijkstra(graph, ip_1_closest_lp)
+
+    if djk.hasPathTo(dijkstra_search, ip_2_closest_lp):
+
+        dijkstra_route = djk.pathTo(dijkstra_search, ip_2_closest_lp)
+        dijstra_jumps = lt.size(dijkstra_route)
+        
+        return (dijkstra_route, dijstra_jumps)
+
+    else:
+
+        return None
+
+
+
+
+
+
+
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista

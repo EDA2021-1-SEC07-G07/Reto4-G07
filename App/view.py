@@ -160,7 +160,19 @@ def optionEight(analyzer):
     print(max_bandwidth_country_map)#TODO - FORMATEAR PRINT!
 
 def optionNine(analyzer):
-    pass
+    
+    ip_1 = input("Ingrese la primera dirección IP: ")
+    ip_2 = input("Ingrese la segunda dirección IP: ")
+
+    ip_1_info = controller.getIPInfo(ip_1)
+    ip_2_info = controller.getIPInfo(ip_2)
+
+    ip_1_closest_lp = str(controller.getClosestLPtoIP(analyzer, ip_1_info))
+    ip_2_closest_lp = str(controller.getClosestLPtoIP(analyzer, ip_2_info))
+
+    ip_minimum_route = controller.getMinimumRouteLP(analyzer, ip_1_closest_lp, ip_2_closest_lp)
+
+    print(ip_minimum_route) #TODO - FORMATEAR PRINT!
 
 def optionTen(analyzer):
     pass
@@ -200,6 +212,9 @@ def thread_cycle():
 
         elif int(inputs[0]) == 8:
             optionEight(analyzer)
+
+        elif int(inputs[0]) == 9:
+            optionNine(analyzer)
 
 
         else:

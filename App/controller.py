@@ -253,3 +253,17 @@ def sortAdjacentCountries(adjacent_countries):
 def getMaxBandwidthCountry(analyzer, country_name, cable_name):
 
     return model.getMaxBandwidthCountry(analyzer, country_name, cable_name)
+
+
+def getIPInfo(ip):
+
+    return model.getIPInfo(ip)
+
+def getClosestLPtoIP(analyzer, ip_info):
+
+    return model.getClosestLPtoIP(analyzer, ip_info)
+
+
+def getMinimumRouteLP(analyzer, ip_1_closest_lp, ip_2_closest_lp):
+    
+    return model.getMinimumRouteLP(analyzer, ip_1_closest_lp, ip_2_closest_lp)
