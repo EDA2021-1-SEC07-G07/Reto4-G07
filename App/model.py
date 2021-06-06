@@ -92,9 +92,11 @@ def newAnalyzer():
         analyzer['info_landing_name'] = m.newMap(numelements=260,
                                      maptype='PROBING',
                                      comparefunction=compareLandingPointIds)   
+
+        analyzer["info_cable_name"] = m.newMap(numelements=260,
+                                     maptype='PROBING',
+                                     comparefunction=compareLandingPointIds)   
    
-
-
         return analyzer
 
     except Exception as exp:
@@ -137,6 +139,16 @@ def addStopConnection(analyzer, lastconnection, connection):
         addConnection(analyzer, origin, destination, distance)
         addCableLandingPoint(analyzer, connection)
         addCableLandingPoint(analyzer, lastconnection)
+
+        ########## MAPA DE CABLES USADO EN EL REQ 6 ##############
+        cable_mini_list = lt.newList("ARRAY_LIST")
+        lt.addLast(cable_mini_list, connection["cable_id"])
+        lt.addLast(cable_mini_list, connection["capacityTBPS"])
+
+        m.put(analyzer["info_cable_name"], connection["cable_name"], cable_mini_list)
+        #########################################################
+
+
         return analyzer
 
     except Exception as exp:
@@ -412,13 +424,7 @@ def getMST(analyzer):
     vertex_list = m.keySet(analyzer["landing_points"])
     vertex_amount = lt.size(vertex_list)
 
-    random_number = random.randrange(1, vertex_amount)
-    random_vertex_key = lt.getElement(vertex_list, random_number)
-    random_vertex_value = lt.firstElement(me.getValue(m.get(analyzer["landing_points"], random_vertex_key)))
 
-    random_vertex = "{}-{}".format(random_vertex_key, random_vertex_value)
-
- 
     MST = prim.PrimMST(analyzer["connections"])
     MST_tree = MST["mst"]
 
@@ -508,14 +514,56 @@ def getAdjacentCountries(analyzer, adjacent_vertices, landing_point):
 
 
 
+def getMaxBandwidthCountry(analyzer, country_name, cable_name):
 
-def sortAdjacentCountries(adjacent_countries):
+    adjacent_max_bandwidth_country_map = m.newMap(numelements=17,
+                                     maptype='PROBING',
+                                     comparefunction=compareLandingPointIds)
 
-    sorted_list = mergesort.sort(adjacent_countries, cmpCountriesDist)
+    capital_name = me.getValue(m.get(analyzer["countries"], country_name))["CapitalName"]
+    capital_landing_point_id = me.getValue(m.get(analyzer["info_landing_name"], capital_name))["capital_id"]
 
-    return sorted_list
+    host_vertex_lp = str(capital_landing_point_id) 
+    
+    adjacent_internal_vertices = gr.adjacents(analyzer["connections"], host_vertex_lp)
+
+    #Se encuentra el nombre interno del cable (con el que se forma el vértice con base en su nombre real)
+    if m.contains(analyzer["info_cable_name"], cable_name):
+        cable_id = lt.getElement(me.getValue(m.get(analyzer["info_cable_name"], cable_name)), 1)
+        cable_bandwidth = lt.getElement(me.getValue(m.get(analyzer["info_cable_name"], cable_name)), 2).replace(".", "")
+    
+
+    for internal_vertex in lt.iterator(adjacent_internal_vertices):
+        if cable_id in internal_vertex:
+          
+            adjacent_external_vertices = gr.adjacents(analyzer["connections"], internal_vertex)
+
+            for external_vertex in lt.iterator(adjacent_external_vertices):
+
+                extra_vertices = gr.adjacents(analyzer["connections"], external_vertex)
+
+                for vertex in lt.iterator(extra_vertices):
+
+                    try:
+                        #En dado caso que sea un país externo, no hay error
+                        landing_point_id = int(vertex.split("-")[0])
+                        adjacent_vertex = me.getValue(m.get(analyzer["info_landing_id"], landing_point_id))
+
+                        if adjacent_vertex["name"].split(", ")[-1] != country_name:
+
+                            adjacent_country = adjacent_vertex["name"].split(", ")[-1]
+                            adjacent_country_internet_users = me.getValue(m.get(analyzer["countries"], adjacent_country))["Internet users"].replace(".", "")
+
+                            adjacent_country_max_bandwith = (float(cable_bandwidth) / float(adjacent_country_internet_users))*10000
+
+                            m.put(adjacent_max_bandwidth_country_map, adjacent_country, adjacent_country_max_bandwith)
+
+                    except:
+                        #En dado caso que se haga referencia al mismo país (adjacente interno) se da un error que es ignorado
+                        pass
 
 
+    return adjacent_max_bandwidth_country_map
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
@@ -571,6 +619,18 @@ def cmpCountriesDist(country_1, country_2):
 
     else:
         return False
+
+
+
+
+def sortAdjacentCountries(adjacent_countries):
+
+    sorted_list = mergesort.sort(adjacent_countries, cmpCountriesDist)
+
+    return sorted_list
+
+
+
 
 # Funciones de ayuda 
 def formatOriginVertex(connection):

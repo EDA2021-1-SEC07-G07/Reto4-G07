@@ -248,3 +248,8 @@ def getAdjacentCountries(analyzer, adjacent_vertices, landing_point):
 def sortAdjacentCountries(adjacent_countries):
 
     return model.sortAdjacentCountries(adjacent_countries)
+    
+
+def getMaxBandwidthCountry(analyzer, country_name, cable_name):
+
+    return model.getMaxBandwidthCountry(analyzer, country_name, cable_name)

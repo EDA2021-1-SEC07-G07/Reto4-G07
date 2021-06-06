@@ -151,9 +151,13 @@ def optionSeven(analyzer):
     print(sorted_adjacent_countries) #TODO-FORMATEAR PRINT!
 
 
-
 def optionEight(analyzer):
-    pass
+    country_name = input("Ingrese el nombre del país desde el que inicia el cable: ")
+    cable_name = input("Ingrese el nombre del cable: ")
+
+    max_bandwidth_country_map = controller.getMaxBandwidthCountry(analyzer, country_name, cable_name)
+
+    print(max_bandwidth_country_map)#TODO - FORMATEAR PRINT!
 
 def optionNine(analyzer):
     pass
@@ -193,6 +197,9 @@ def thread_cycle():
 
         elif int(inputs[0]) == 7:
             optionSeven(analyzer)
+
+        elif int(inputs[0]) == 8:
+            optionEight(analyzer)
 
 
         else:
