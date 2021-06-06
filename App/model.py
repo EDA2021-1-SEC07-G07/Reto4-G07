@@ -690,7 +690,7 @@ def graphSubmarineMap(analyzer):
                    [float(landing_point_B_latitude), float(landing_point_B_latitude)]]
 
         if landing_point_A_latitude != "" and landing_point_B_latitude != "":
-            folium.PolyLine(coordinates, color='green', opacity = 0.2).add_to(gm)
+            folium.PolyLine(coordinates, color='green', opacity = 0.3).add_to(gm)
 
     gm.save("./Data/map.html")
 
