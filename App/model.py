@@ -41,6 +41,7 @@ from DISClib.DataStructures import indexheap as iheap
 from math import radians, cos, sin, asin, sqrt
 from DISClib.Algorithms.Sorting import mergesort 
 import ipapi
+import folium
 import random
 assert config
 
@@ -608,12 +609,90 @@ def getMinimumRouteLP(analyzer, ip_1_closest_lp, ip_2_closest_lp):
         return None
 
 
+def graphSubmarineMap(analyzer):
+
+    graph = analyzer["connections"]
+
+    gm = folium.Map(location=[4.6012, -74.065], zoom_start=3, tiles="Stamen Terrain")
+
+    vertex_list = gr.vertices(graph)
+    edge_list = gr.edges(graph)
+
+    for vertex in lt.iterator(vertex_list):
+
+        landing_point = int(vertex.split("-")[0])
+        landing_point_info = me.getValue(m.get(analyzer["info_landing_id"], landing_point))
+        
+        if landing_point < 24089:
+            #Se trata de un landing point submarino
+            landing_point_latitude = landing_point_info["latitude"]
+            landing_point_longitude = landing_point_info["longitude"]
+
+            landing_point_name = landing_point_info["name"]
+            tooltip = "Click me!"
+
+            folium.Marker(
+                [landing_point_latitude, landing_point_longitude], popup="<i>{}</i>".format(landing_point_name), tooltip=tooltip,
+                icon=folium.Icon(color="blue")
+            ).add_to(gm)
+        
+        else:
+            #Se trata de un landing point terreste de capital
+            landing_point_latitude = landing_point_info["CapitalLatitude"]
+            landing_point_longitude = landing_point_info["CapitalLongitude"]
+
+            landing_point_name = landing_point_info["CapitalName"] + ", " + landing_point_info["CountryName"]
+            tooltip = "Click me!"
+
+            if landing_point_latitude != "":
+
+                folium.Marker(
+                    [landing_point_latitude, landing_point_longitude], popup="<i>{}</i>".format(landing_point_name), tooltip=tooltip,
+                    icon=folium.Icon(color="red")
+                ).add_to(gm)
+
+    for edge in lt.iterator(edge_list): 
+
+        vertexA = edge["vertexA"]
+        vertexB = edge["vertexB"]
+
+        landing_point_A = int(vertexA.split("-")[0])
+        landing_point_A_info = me.getValue(m.get(analyzer["info_landing_id"], landing_point_A))
+        cable_id_A = "-".join((vertexA.split("-")[1:-1]))
+
+        landing_point_B = int(vertexB.split("-")[0])
+        landing_point_B_info = me.getValue(m.get(analyzer["info_landing_id"], landing_point_B))
+        cable_id_B = "-".join((vertexB.split("-")[1:-1]))
 
 
+        if landing_point_A < 24089:
+            #Se trata de un landing point submarino
+            landing_point_A_latitude = landing_point_A_info["latitude"]
+            landing_point_A_longitude = landing_point_A_info["longitude"]
+
+        else:
+            #Se trata de un landing point terreste de capital
+            landing_point_A_latitude = landing_point_A_info["CapitalLatitude"]
+            landing_point_A_longitude = landing_point_A_info["CapitalLongitude"]
+
+        if landing_point_B < 24089:
+            #Se trata de un landing point submarino
+            landing_point_B_latitude = landing_point_B_info["latitude"]
+            landing_point_B_longitude = landing_point_B_info["longitude"]
+
+        else:
+            #Se trata de un landing point terreste de capital
+            landing_point_B_latitude = landing_point_B_info["CapitalLatitude"]
+            landing_point_B_longitude = landing_point_B_info["CapitalLongitude"]
 
 
+        coordinates = [[float(landing_point_A_latitude), float(landing_point_A_longitude)], 
+                   [float(landing_point_B_latitude), float(landing_point_B_latitude)]]
 
+        if landing_point_A_latitude != "" and landing_point_B_latitude != "":
+            folium.PolyLine(coordinates, color='green', opacity = 0.2).add_to(gm)
 
+    gm.save("./Data/map.html")
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

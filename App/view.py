@@ -175,7 +175,8 @@ def optionNine(analyzer):
     print(ip_minimum_route) #TODO - FORMATEAR PRINT!
 
 def optionTen(analyzer):
-    pass
+
+    controller.graphSubmarineMap(analyzer)
 
 
 """
@@ -187,7 +188,7 @@ def thread_cycle():
         printMenu()
         inputs = input('Seleccione una opción para continuar\n>')
 
-        if int(inputs[0]) == 1:
+        if int(inputs) == 1:
             print("\nInicializando....")
             # cont es el controlador que se usará de acá en adelante
             analyzer = controller.init()
@@ -215,6 +216,9 @@ def thread_cycle():
 
         elif int(inputs[0]) == 9:
             optionNine(analyzer)
+
+        elif int(inputs[0]) == 1 and int(inputs[1]) == 0:
+            optionTen(analyzer)
 
 
         else:

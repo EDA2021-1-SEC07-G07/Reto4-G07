@@ -267,3 +267,7 @@ def getClosestLPtoIP(analyzer, ip_info):
 def getMinimumRouteLP(analyzer, ip_1_closest_lp, ip_2_closest_lp):
     
     return model.getMinimumRouteLP(analyzer, ip_1_closest_lp, ip_2_closest_lp)
+
+def graphSubmarineMap(analyzer):
+
+    return model.graphSubmarineMap(analyzer)
