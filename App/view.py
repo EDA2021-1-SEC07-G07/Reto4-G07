@@ -32,6 +32,7 @@ from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Graphs import scc
+from DISClib.DataStructures import mapentry as me
 
 """
 La vista se encarga de la interacción con el usuario
@@ -117,7 +118,20 @@ def optionThree(analyzer):
 def optionFour(analyzer):
     
     interconnected_landing_points = controller.getLandingPointConnections(analyzer)
-    print(interconnected_landing_points)#TODO FORMATEAR PRINT!
+
+    top_number = 1
+
+    for landing_point in lt.iterator(interconnected_landing_points):
+
+        lp_name = landing_point["CapitalName"]
+        lp_country = landing_point["CountryName"]
+        lp_id = landing_point["capital_id"]
+        conected_cables = landing_point["connected_cables"]
+
+        print("Top: {}, Nombre: {}, País: {}, ID: {}, Conected Cables: {}".format(top_number, lp_name, lp_country, lp_id, conected_cables))
+
+        top_number += 1
+
 
 def optionFive(analyzer):
     
@@ -129,14 +143,23 @@ def optionFive(analyzer):
     minimum_total_distance = dijkstra_info[0]
     minimum_route = dijkstra_info[1]
 
-    #TODO-FORMATEAR PRINT!
-    print(minimum_total_distance)
-    print(minimum_route)
+    print("Distancia total de la ruta: {} km.\n".format(minimum_total_distance))
+    
+    for edge in lt.iterator(minimum_route):
+
+        LP_A = edge["vertexA"]
+        LP_B = edge["vertexB"]
+        distance_lps = edge["weight"]
+        print("Landing Point 1: {}, Landing Point 2: {}, Distancia: {}".format(LP_A, LP_B, distance_lps))
 
 def optionSix(analyzer):
     
     minimum_spanning_tree = controller.getMST(analyzer)
-    print(minimum_spanning_tree) #TODO - FORMATEAR PRINT!
+
+    print("Número de nodos conectados a la red de expansión mínima: {}".format(minimum_spanning_tree[1]))
+    print("Costo total de la red de expansión mínima: {} km.".format(minimum_spanning_tree[0]))
+    print("Cantidad de arcos en la ruta más larga: {}".format(minimum_spanning_tree[2]))
+
 
 def optionSeven(analyzer):
     
@@ -148,7 +171,12 @@ def optionSeven(analyzer):
 
     sorted_adjacent_countries = controller.sortAdjacentCountries(adjacent_countries)
 
-    print(sorted_adjacent_countries) #TODO-FORMATEAR PRINT!
+    print("Número de paises afectados: {}.\n".format(lt.size(sorted_adjacent_countries)))
+    for country in lt.iterator(sorted_adjacent_countries):
+        
+        country_name = lt.getElement(country, 1)
+        country_distance = lt.getElement(country, 2)
+        print("País afectado: {}, Distancia: {}".format(country_name, country_distance) )
 
 
 def optionEight(analyzer):
@@ -157,7 +185,15 @@ def optionEight(analyzer):
 
     max_bandwidth_country_map = controller.getMaxBandwidthCountry(analyzer, country_name, cable_name)
 
-    print(max_bandwidth_country_map)#TODO - FORMATEAR PRINT!
+    key_list = m.keySet(max_bandwidth_country_map)
+    
+    for country in lt.iterator(key_list):
+
+        country_name = country
+        bandwith = me.getValue(m.get(max_bandwidth_country_map, country_name))
+
+        print("País conectado: {}, Ancho de banda asegurado: {} Mbps".format(country_name, bandwith))
+    
 
 def optionNine(analyzer):
     
@@ -172,7 +208,15 @@ def optionNine(analyzer):
 
     ip_minimum_route = controller.getMinimumRouteLP(analyzer, ip_1_closest_lp, ip_2_closest_lp)
 
-    print(ip_minimum_route) #TODO - FORMATEAR PRINT!
+    print("Número de saltos totales: {}. \n".format(ip_minimum_route[1]))
+
+    for edge in lt.iterator(ip_minimum_route[0]):
+
+        vertex_1 = edge["vertexA"]
+        vertex_2 = edge["vertexB"]
+        distance = edge["weight"]
+
+        print("Vertice A: {}, Vertice B: {}, Distancia: {} km.".format(vertex_1, vertex_2, distance))
 
 def optionTen(analyzer):
 
